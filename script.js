@@ -18,8 +18,8 @@ const translations = {
     cloud: "Cloud",
     experiences: "Experiences",
     contactMe: "Contact me",
-    name: "Name",
-    email: "Email",
+    to_name: "Name",
+    from_name: "Email",
     subject: "Subject",
     message: "Message",
     sendMessage: "Send Message",
@@ -81,8 +81,8 @@ const translations = {
     cloud: "Cloud",
     experiences: "Expériences",
     contactMe: "Contactez-moi",
-    name: "Nom",
-    email: "Email",
+    to_name: "Nom",
+    from_name: "Email",
     subject: "Sujet",
     message: "Message",
     sendMessage: "Envoyer le Message",
@@ -153,7 +153,7 @@ function switchLanguage(lang) {
 
   // Update text content
   document.querySelector("h2").textContent = t.title;
-  document.querySelector("p.text-center").textContent = t.description;
+  document.querySelector(".text-center").textContent = t.description;
   document.querySelector("h3").textContent = t.coreSkills;
   document.querySelectorAll("h3")[1].textContent = t.experiences;
   document.querySelectorAll("h3")[2].textContent = t.contactMe;
@@ -165,14 +165,14 @@ function switchLanguage(lang) {
   document.querySelectorAll(".text-gray-400.mb-1")[3].textContent = t.cloud;
 
   // Update form labels
-  document.querySelector('label[for="name"]').textContent = t.name;
-  document.querySelector('label[for="email"]').textContent = t.email;
+  document.querySelector('label[for="name"]').textContent = t.to_name;
+  document.querySelector('label[for="email"]').textContent = t.from_name;
   document.querySelector('label[for="subject"]').textContent = t.subject;
   document.querySelector('label[for="message"]').textContent = t.message;
 
   // Update form placeholders
-  document.getElementById("name").placeholder = t.namePlaceholder;
-  document.getElementById("email").placeholder = t.emailPlaceholder;
+  document.getElementById("to_name").placeholder = t.namePlaceholder;
+  document.getElementById("from_name").placeholder = t.emailPlaceholder;
   document.getElementById("subject").placeholder = t.subjectPlaceholder;
   document.getElementById("message").placeholder = t.messagePlaceholder;
 
@@ -263,3 +263,8 @@ document
         }, 2000);
       });
   });
+
+// Initialize the page with default experiences on load
+document.addEventListener("DOMContentLoaded", function () {
+  updateExperiences(translations.en.experienceData);
+});
