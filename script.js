@@ -1,3 +1,8 @@
+// EmailJS initialization
+(function () {
+  emailjs.init("sJTPJww-QPRakuGTJ");
+})();
+
 // Language switching functionality
 let currentLanguage = "en";
 
@@ -22,8 +27,12 @@ const translations = {
     emailPlaceholder: "your.email@example.com",
     subjectPlaceholder: "Subject of your message",
     messagePlaceholder: "Your message here...",
-    emailSuccess:
-      "Email client opened! Please send the email from your email application.",
+    emailSuccess: "Message sent successfully!",
+    emailSuccessText:
+      "Thank you for your message. I will get back to you soon.",
+    emailError: "Error!",
+    emailErrorText: "Please check all fields and try again.",
+    understand: "I understand",
     copyright: "© 2025 RAJAONAH Tiavina Handrianina. All rights reserved.",
     // Experience data
     experienceData: [
@@ -81,8 +90,11 @@ const translations = {
     emailPlaceholder: "votre.email@exemple.com",
     subjectPlaceholder: "Sujet de votre message",
     messagePlaceholder: "Votre message ici...",
-    emailSuccess:
-      "Client email ouvert! Veuillez envoyer l'email depuis votre application email.",
+    emailSuccess: "Message envoyé avec succès !",
+    emailSuccessText: "Merci pour votre message. Je vous répondrai bientôt.",
+    emailError: "Erreur !",
+    emailErrorText: "Vérifiez bien les champs et réessayez !",
+    understand: "Je comprends",
     copyright: "© 2025 RAJAONAH Tiavina Handrianina. Tous droits réservés.",
     // Experience data in French
     experienceData: [
@@ -194,29 +206,60 @@ function updateExperiences(experienceData) {
   });
 }
 
-document.getElementById("contactForm").addEventListener("submit", function (e) {
-  e.preventDefault();
+document
+  .getElementById("contactForm")
+  .addEventListener("submit", function (event) {
+    event.preventDefault();
+    var _this = this;
+    var submitButton = _this.querySelector('button[type="submit"]');
 
-  const name = document.getElementById("name").value;
-  const email = document.getElementById("email").value;
-  const subject = document.getElementById("subject").value;
-  const message = document.getElementById("message").value;
+    // Disable submit button to prevent multiple submissions
+    submitButton.disabled = true;
+    const originalText = submitButton.textContent;
+    submitButton.textContent =
+      currentLanguage === "fr" ? "Envoi..." : "Sending...";
 
-  // Create email body
-  const emailBody = `Name: ${name}%0D%0AEmail: ${email}%0D%0A%0D%0AMessage:%0D%0A${message}`;
+    // Get current language translations
+    const t = translations[currentLanguage];
 
-  // Create mailto link
-  const mailtoLink = `mailto:rajaonahtiavina@gmail.com?subject=${encodeURIComponent(
-    subject
-  )}&body=${emailBody}`;
+    // Send the form via EmailJS
+    emailjs
+      .sendForm("service_n8p3n5q", "template_3pj1447", _this)
+      .then(
+        function () {
+          Swal.fire({
+            title: t.emailSuccess,
+            text: t.emailSuccessText,
+            icon: "success",
+            showConfirmButton: false,
+            confirmButtonColor: "#3b82f6",
+            timer: 3000,
+          });
 
-  // Open email client
-  window.location.href = mailtoLink;
-
-  // Reset form
-  this.reset();
-
-  // Show success message
-  const t = translations[currentLanguage];
-  alert(t.emailSuccess);
-});
+          // Clear form fields after successful submission
+          setTimeout(function () {
+            document.getElementById("to_name").value = "";
+            document.getElementById("from_name").value = "";
+            document.getElementById("subject").value = "";
+            document.getElementById("message").value = "";
+          }, 1500);
+        },
+        function (error) {
+          Swal.fire({
+            title: t.emailError,
+            text: t.emailErrorText,
+            icon: "error",
+            confirmButtonText: t.understand,
+            confirmButtonColor: "#ef4444",
+          });
+          console.log("EmailJS Error:", error);
+        }
+      )
+      .finally(function () {
+        // Re-enable submit button after delay
+        setTimeout(function () {
+          submitButton.disabled = false;
+          submitButton.textContent = originalText;
+        }, 2000);
+      });
+  });
